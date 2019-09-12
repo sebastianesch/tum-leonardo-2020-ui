@@ -1,0 +1,95 @@
+<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:sap="http://www.sap.com/Protocols/SAPData"
+	xmlns:ux="http://www.sap.com/Protocols/OData4SAP/UX" xmlns:gp="http://www.sap.com/Protocols/SAPData/GenericPlayer" Version="1.0">
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml"><edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/></edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470974/Common.xml?api=v2"><edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/></edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml"><edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/></edmx:Reference>
+	<edmx:Reference xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"
+		Uri="https://wiki.scn.sap.com/wiki/download/attachments/448470968/UI.xml?api=v2"><edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/></edmx:Reference>
+	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="2.0">
+		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="QuestService">
+			<EntityType Name="Hunter">
+				<Key><PropertyRef Name="id"/></Key><Property Name="modifiedAt" Type="Edm.DateTimeOffset" ConcurrencyMode="Fixed"/><Property Name="createdAt" Type="Edm.DateTimeOffset"/><Property Name="createdBy" Type="Edm.String" MaxLength="255"/><Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/><Property Name="id" Type="Edm.Guid" Nullable="false"/><Property Name="name" Type="Edm.String" Nullable="false"/><Property Name="level" Type="Edm.Int32" Nullable="false"/><Property Name="strength" Type="Edm.Int32" Nullable="false"/></EntityType>
+			<EntityType Name="Monster">
+				<Key><PropertyRef Name="id"/></Key><Property Name="modifiedAt" Type="Edm.DateTimeOffset" ConcurrencyMode="Fixed"/><Property Name="createdAt" Type="Edm.DateTimeOffset"/><Property Name="createdBy" Type="Edm.String" MaxLength="255"/><Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/><Property Name="id" Type="Edm.Guid" Nullable="false"/><Property Name="level" Type="Edm.Int32" Nullable="false"/><Property Name="type_id" Type="Edm.Guid" Nullable="false"/><NavigationProperty Name="type" Relationship="QuestService.Monster_type" FromRole="Monster" ToRole="MonsterType"/></EntityType>
+			<EntityType Name="MonsterType">
+				<Key><PropertyRef Name="id"/></Key><Property Name="modifiedAt" Type="Edm.DateTimeOffset" ConcurrencyMode="Fixed"/><Property Name="createdAt" Type="Edm.DateTimeOffset"/><Property Name="createdBy" Type="Edm.String" MaxLength="255"/><Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/><Property Name="id" Type="Edm.Guid" Nullable="false"/><Property Name="name" Type="Edm.String" Nullable="false"/><Property Name="baseStrength" Type="Edm.Int32" Nullable="false"/></EntityType>
+			<EntityType Name="Quest">
+				<Key><PropertyRef Name="id"/></Key><Property Name="modifiedAt" Type="Edm.DateTimeOffset" ConcurrencyMode="Fixed"/><Property Name="createdAt" Type="Edm.DateTimeOffset"/><Property Name="createdBy" Type="Edm.String" MaxLength="255"/><Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/><Property Name="id" Type="Edm.Guid" Nullable="false"/><Property Name="data" Type="Edm.DateTimeOffset" Nullable="false"/><Property Name="result" Type="Edm.Boolean"/><Property Name="hunter_id" Type="Edm.Guid" Nullable="false"/><Property Name="monster_id" Type="Edm.Guid" Nullable="false"/><NavigationProperty Name="hunter" Relationship="QuestService.Quest_hunter" FromRole="Quest" ToRole="Hunter"/><NavigationProperty Name="monster" Relationship="QuestService.Quest_monster" FromRole="Quest" ToRole="Monster"/></EntityType>
+			<Association Name="Monster_type"><End Type="QuestService.Monster" Multiplicity="*" Role="Monster"/><End Type="QuestService.MonsterType" Multiplicity="1" Role="MonsterType"/>
+				<ReferentialConstraint>
+					<Principal Role="MonsterType"><PropertyRef Name="id"/></Principal>
+					<Dependent Role="Monster"><PropertyRef Name="type_id"/></Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Quest_hunter"><End Type="QuestService.Quest" Multiplicity="*" Role="Quest"/><End Type="QuestService.Hunter" Multiplicity="1" Role="Hunter"/>
+				<ReferentialConstraint>
+					<Principal Role="Hunter"><PropertyRef Name="id"/></Principal>
+					<Dependent Role="Quest"><PropertyRef Name="hunter_id"/></Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<Association Name="Quest_monster"><End Type="QuestService.Quest" Multiplicity="*" Role="Quest"/><End Type="QuestService.Monster" Multiplicity="1" Role="Monster"/>
+				<ReferentialConstraint>
+					<Principal Role="Monster"><PropertyRef Name="id"/></Principal>
+					<Dependent Role="Quest"><PropertyRef Name="monster_id"/></Dependent>
+				</ReferentialConstraint>
+			</Association>
+			<EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true"><EntitySet Name="Hunter" EntityType="QuestService.Hunter"/><EntitySet Name="Monster" EntityType="QuestService.Monster"/><EntitySet Name="MonsterType" EntityType="QuestService.MonsterType"/><EntitySet Name="Quest" EntityType="QuestService.Quest"/>
+				<AssociationSet Name="Monster_type" Association="QuestService.Monster_type"><End EntitySet="Monster" Role="Monster"/><End EntitySet="MonsterType" Role="MonsterType"/></AssociationSet>
+				<AssociationSet Name="Quest_hunter" Association="QuestService.Quest_hunter"><End EntitySet="Quest" Role="Quest"/><End EntitySet="Hunter" Role="Hunter"/></AssociationSet>
+				<AssociationSet Name="Quest_monster" Association="QuestService.Quest_monster"><End EntitySet="Quest" Role="Quest"/><End EntitySet="Monster" Role="Monster"/></AssociationSet>
+			</EntityContainer>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.EntityContainer/Hunter">
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.DeleteRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.DeleteRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Deletable" Bool="false"/></Record>
+				</Annotation>
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.InsertRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.InsertRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Insertable" Bool="false"/></Record>
+				</Annotation>
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.UpdateRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.UpdateRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Updatable" Bool="false"/></Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Hunter/modifiedAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Hunter/createdAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Hunter/createdBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Hunter/modifiedBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.EntityContainer/Monster">
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.DeleteRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.DeleteRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Deletable" Bool="false"/></Record>
+				</Annotation>
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.InsertRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.InsertRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Insertable" Bool="false"/></Record>
+				</Annotation>
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.UpdateRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.UpdateRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Updatable" Bool="false"/></Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Monster/modifiedAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Monster/createdAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Monster/createdBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Monster/modifiedBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.EntityContainer/MonsterType">
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.DeleteRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.DeleteRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Deletable" Bool="false"/></Record>
+				</Annotation>
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.InsertRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.InsertRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Insertable" Bool="false"/></Record>
+				</Annotation>
+				<Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Capabilities.UpdateRestrictions">
+					<Record xmlns="http://docs.oasis-open.org/odata/ns/edm" Type="Capabilities.UpdateRestrictionsType"><PropertyValue xmlns="http://docs.oasis-open.org/odata/ns/edm" Property="Updatable" Bool="false"/></Record>
+				</Annotation>
+			</Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.MonsterType/modifiedAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.MonsterType/createdAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.MonsterType/createdBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.MonsterType/modifiedBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Quest/modifiedAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Quest/createdAt"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created At"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Quest/createdBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Created By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+			<Annotations xmlns="http://docs.oasis-open.org/odata/ns/edm" Target="QuestService.Quest/modifiedBy"><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Common.Label" String="Changed By"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Computed" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="Core.Immutable" Bool="true"/><Annotation xmlns="http://docs.oasis-open.org/odata/ns/edm" Term="UI.HiddenFilter" Bool="true"/></Annotations>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

@@ -1,0 +1,83 @@
+{
+	"_version": "3.0.0",
+	"identification": {
+		"id": "6f190674-82af-4c80-9d96-f59bc57f68e4-1567589428803",
+		"entityType": "bundle"
+	},
+	"payload": {
+		"catalogs": [{
+			"_version": "3.0.0",
+			"identification": {
+				"id": "defaultCatalogId",
+				"title": "{{title}}",
+				"entityType": "catalog",
+				"i18n": "i18n/defaultCatalogId.properties"
+			},
+			"payload": {
+				"viz": [{
+					"id": "ibsolution.monster.monsterhunter-questapp",
+					"vizId": "Quest-display"},{
+					"id": "ibsolution.monster.monsterhunter-monsterapp",
+					"vizId": "Monster-display"
+				}]
+			}
+		}],
+		"groups": [{
+			"_version": "3.0.0",
+			"identification": {
+				"id": "defaultGroupId",
+				"title": "{{title}}",
+				"entityType": "group",
+				"i18n": "i18n/defaultGroupId.properties"
+			},
+			"payload": {
+				"viz": [{
+					"id": "ibsolution.monster.monsterhunter-questapp-0-1568196522610",
+					"appId": "ibsolution.monster.monsterhunter-questapp",
+					"vizId": "Quest-display"
+				}, {
+					"id": "ibsolution.monster.monsterhunter-monsterapp-1-1568196522610",
+					"appId": "ibsolution.monster.monsterhunter-monsterapp",
+					"vizId": "Monster-display"
+				}]
+			}
+		}],
+		"sites": [{
+			"_version": "3.0.0",
+			"identification": {
+				"id": "a1f13660-1df5-407b-85b8-2b4764bc01b6-1567589428803",
+				"entityType": "site",
+				"title": "Fiori Launchpad for IBsolution Monster Hunter",
+				"description": "SAP Fiori Launchpad Site for IBsolution Monster Hunter"
+			},
+			"payload": {
+				"config": {
+					"ushellConfig": {
+						"renderers": {
+							"fiori2": {
+								"componentData": {
+									"config": {
+										"applications": {
+											"Shell-home": {}
+										},
+										"enableSearch": true,
+										"enablePersonalization": true,
+										"enableSetTheme": true,
+										"enableSetLanguage": true
+									}
+								}
+							}
+						}
+					}
+				},
+				"groupsOrder": ["defaultGroupId"],
+				"sap.cloud.portal": {
+					"config": {
+						"theme.id": "sap_fiori_3",
+						"theme.active": ["sap_fiori_3", "sap_belize_hcb", "sap_belize_hcw"]
+					}
+				}
+			}
+		}]
+	}
+}

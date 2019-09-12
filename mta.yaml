@@ -1,0 +1,91 @@
+ID: ib-monster-ui
+_schema-version: '2.1'
+parameters:
+  deploy_mode: html5-repo
+version: 0.0.2
+modules:
+  - name: ib-monster-ui-approuter
+    type: approuter.nodejs
+    path: approuter
+    parameters:
+      disk-quota: 256M
+      memory: 256M
+      routes:
+      - route: ib-monster-ui.cfapps.eu10.hana.ondemand.com
+    requires:
+      - name: ib-monster-ui-uaa
+      - name: ib-monster-ui-portal-resources
+      - name: ib-monster-ui-html5-repo-runtime
+      - name: monsterhunterapi
+        group: destinations
+        properties:
+          strictSSL: false
+          forwardAuthToken: true
+          name: monsterhunterapi
+          url: '~{url}'
+  - name: ib-monster-ui-ui-deployer
+    type: com.sap.html5.application-content
+    path: ui-deployer
+    requires:
+      - name: ib-monster-ui-html5-repo-host
+    build-parameters:
+      requires:
+        - name: monsterhunter-questapp
+          artifacts:
+            - './*'
+          target-path: resources/monsterhunter-questapp
+        - name: monsterhunter-monsterapp
+          artifacts:
+            - './*'
+          target-path: resources/monsterhunter-monsterapp
+  - name: ib-monster-portal
+    type: com.sap.portal.content
+    path: portal
+    parameters:
+      stack: cflinuxfs3
+      memory: 128M
+      buildpack: 'https://github.com/cloudfoundry/nodejs-buildpack/releases/download/v1.6.39/nodejs-buildpack-cflinuxfs3-v1.6.39.zip'
+    requires:
+      - name: ib-monster-ui-portal-resources
+      - name: ib-monster-ui-uaa
+      - name: ib-monster-ui-html5-repo-host
+      - name: ib-monster-ui-ui-deployer
+  - name: monsterhunter-questapp
+    type: html5
+    path: monsterhunter-questapp
+    build-parameters:
+      builder: grunt
+      supported-platforms: []
+      build-result: dist
+  - name: monsterhunter-monsterapp
+    type: html5
+    path: monsterhunter-monsterapp
+    build-parameters:
+      builder: grunt
+      supported-platforms: []
+      build-result: dist
+resources:
+  - name: ib-monster-ui-html5-repo-runtime
+    parameters:
+      service-plan: app-runtime
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: ib-monster-ui-html5-repo-host
+    parameters:
+      service-plan: app-host
+      service: html5-apps-repo
+    type: org.cloudfoundry.managed-service
+  - name: ib-monster-ui-uaa
+    parameters:
+      path: ./xs-security.json
+      service-plan: application
+      service: xsuaa
+    type: org.cloudfoundry.managed-service
+  - name: ib-monster-ui-portal-resources
+    parameters:
+      service-plan: standard
+      service: portal
+    type: org.cloudfoundry.managed-service
+  - name: monsterhunterapi
+    properties:
+      url: 'https://ib-monster-srv.cfapps.eu10.hana.ondemand.com/'
